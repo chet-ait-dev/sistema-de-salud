@@ -264,4 +264,46 @@
         name="Administrative Gender"
         parent="settings_menu"
         sequence="100"/>
+
+    <record id="view_infrastructure_bed_tree" model="ir.ui.view">
+        <field name="name">infrastructure.bed.tree</field>
+        <field name="model">infrastructure.bed</field>
+        <field eval="8" name="priority"/>
+        <field name="arch" type="xml">
+            <tree string="Beds">
+                <field name="name"/>
+                <field name="code"/>
+            </tree>
+        </field>
+    </record>
+
+    <record id="view_infrastructure_bed_form" model="ir.ui.view">
+        <field name="name">infrastructure.bed.form</field>
+        <field name="model">infrastructure.bed</field>
+        <field name="priority" eval="2"/>
+        <field name="arch" type="xml">
+            <form string="Beds">
+                <group>
+                    <field name="name"/>
+                    <field name="code"/>
+                </group>
+            </form>
+        </field>
+    </record>
+
+    <record id="action_infrastructure_bed" model="ir.actions.act_window">
+        <field name="name">Beds</field>
+        <field name="res_model">infrastructure.bed</field>
+        <field name="view_mode">tree,form</field>
+        <field name="view_ids" eval="[(5, 0, 0),
+            (0, 0, {'view_mode': 'tree', 'view_id': ref('view_infrastructure_bed_tree')}),
+            (0, 0, {'view_mode': 'form', 'view_id': ref('view_infrastructure_bed_form')})]"/>
+    </record>
+
+    <menuitem
+        id="infrastructure_bed_submenu"
+        action="action_infrastructure_bed"
+        name="Beds"
+        parent="settings_menu"
+        sequence="100"/>
 </odoo>
