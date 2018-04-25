@@ -13,7 +13,9 @@ para reutilizarlo con otros recursos.
     'website': 'https://www.vauxoo.com',
     'images' : [],
     'depends' : ['base'],
-    'data': [],
+    'data': [
+        'views/patient_menu.xml'
+    ],
     'demo': [],
     'qweb': [],
     'installable': True,
