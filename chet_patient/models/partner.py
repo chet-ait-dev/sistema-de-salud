@@ -35,6 +35,13 @@ class ResPartner(models.Model):
     _name = 'res.partner'
     _inherit = 'res.partner'
 
+    @api.multi
+    def _episode_total(self):
+        episode_obj = self.env['healthcare.episode']
+        for partner in self:
+            partner.total_episodes = len(episode_obj.search([('patient_id', '=', partner.id)]))
+
+    patient = fields.Boolean()
     gender_id = fields.Many2one(
         'administrative.gender', copy=False,
         help='The gender of a person used for administrative purposes')
@@ -55,6 +62,7 @@ class ResPartner(models.Model):
         string="Age (years old)",
         compute='_compute_age',
         search='_search_age')
+    total_episodes = fields.Integer(compute='_episode_total')
 
     @api.multi
     def _compute_age(self):
