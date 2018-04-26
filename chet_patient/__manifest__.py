@@ -12,7 +12,7 @@ para reutilizarlo con otros recursos.
     'category': 'Medical',
     'website': 'https://www.vauxoo.com',
     'images' : [],
-    'depends' : ['base'],
+    'depends' : ['base', 'mail'],
     'data': [
         'views/patient_menu.xml'
     ],

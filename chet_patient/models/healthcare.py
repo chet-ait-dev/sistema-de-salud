@@ -30,6 +30,7 @@ class InfrastructureLocation(models.Model):
 class HealthcareEpisode(models.Model):
     _name = 'healthcare.episode'
     _rec_name = 'patient_id'
+    _inherit = ['mail.thread']
 
     # def _default_encounter_ids(self):
     #     bed_id = self.env['infrastructure.bed'].search([('state','=','active')],limit=1)
