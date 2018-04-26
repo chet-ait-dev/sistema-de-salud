@@ -110,3 +110,10 @@ class ResPartner(models.Model):
             return [('birthdate', '>=', first_possible_birthdate)]
         elif operator == '<':
             return [('birthdate', '>', last_possible_birthdate)]
+    @api.multi
+    def action_view_healthcare_episode(self):
+        self.ensure_one()
+        action = self.env.ref('chet_patient.action_healthcare_episode').read()[0]
+        action['domain'] = [('patient_id', '=', self.id)]
+        action['context'] = {'default_patient_id': self.id}
+        return action

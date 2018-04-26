@@ -103,6 +103,25 @@
                         domain="[('is_company', '=', True)]" context="{'default_is_company': True, 'default_supplier': supplier, 'default_customer': customer}"
                         invisible="1"/>
                 </div>
+                <div class="oe_button_box" name="button_box">
+                    <button name="toggle_active" type="object"
+                            class="oe_stat_button" icon="fa-archive">
+                        <field name="active" widget="boolean_button"
+                            options='{"terminology": "archive"}'/>
+                    </button>
+                    <button
+                        type="object"
+                        class="oe_stat_button"
+                        icon="fa-pencil-square-o"
+                        name="action_view_healthcare_episode"
+                        >
+                        <div class="o_form_field o_stat_info">
+                            <span class="o_stat_value">
+                            </span>
+                            <span class="o_stat_text">Episodes</span>
+                        </div>
+                    </button>
+                </div>
                 <group>
                     <group>
                         <field name="type" attrs="{'invisible': [('parent_id','=', False)]}" groups="base.group_no_one"/>
@@ -189,12 +208,14 @@
         <field name="priority" eval="2"/>
         <field name="arch" type="xml">
             <form string="Marital Status">
-                <group>
-                    <field name="name"/>
-                    <field name="code"/>
-                    <field name="definition"/>
-                    <field name="comments"/>
-                </group>
+                <sheet string="Marital Status">
+                    <group>
+                        <field name="name"/>
+                        <field name="code"/>
+                        <field name="definition"/>
+                        <field name="comments"/>
+                    </group>
+                </sheet>
             </form>
         </field>
     </record>
@@ -211,7 +232,7 @@
     <menuitem name="Settings"
         id="settings_menu"
         parent="patient_administration"
-        sequence="40"/>
+        sequence="100"/>
     <menuitem
         id="marital_status_submenu"
         action="action_marital_status"
@@ -239,12 +260,14 @@
         <field name="priority" eval="2"/>
         <field name="arch" type="xml">
             <form string="Administrative Gender">
-                <group>
-                    <field name="name"/>
-                    <field name="code"/>
-                    <field name="definition"/>
-                    <field name="comments"/>
-                </group>
+                <sheet string="Administrative Gender">
+                    <group>
+                        <field name="name"/>
+                        <field name="code"/>
+                        <field name="definition"/>
+                        <field name="comments"/>
+                    </group>
+                </sheet>
             </form>
         </field>
     </record>
@@ -273,6 +296,8 @@
             <tree string="Beds">
                 <field name="name"/>
                 <field name="code"/>
+                <field name="location_id"/>
+                <field name="state"/>
             </tree>
         </field>
     </record>
@@ -283,10 +308,16 @@
         <field name="priority" eval="2"/>
         <field name="arch" type="xml">
             <form string="Beds">
-                <group>
-                    <field name="name"/>
-                    <field name="code"/>
-                </group>
+                <header>
+                    <field name="state" widget="statusbar" statusbar_visible="active,maintenance,damaged" />
+                </header>
+                <sheet string="Bed">
+                    <group>
+                        <field name="name"/>
+                        <field name="code"/>
+                        <field name="location_id"/>
+                    </group>
+                </sheet>
             </form>
         </field>
     </record>
@@ -306,4 +337,115 @@
         name="Beds"
         parent="settings_menu"
         sequence="100"/>
+
+    <record id="view_infrastructure_location_tree" model="ir.ui.view">
+        <field name="name">infrastructure.location.tree</field>
+        <field name="model">infrastructure.location</field>
+        <field eval="8" name="priority"/>
+        <field name="arch" type="xml">
+            <tree string="Locations">
+                <field name="name"/>
+                <field name="code"/>
+            </tree>
+        </field>
+    </record>
+
+    <record id="view_infrastructure_location_form" model="ir.ui.view">
+        <field name="name">infrastructure.location.form</field>
+        <field name="model">infrastructure.location</field>
+        <field name="priority" eval="2"/>
+        <field name="arch" type="xml">
+            <form string="Locations">
+                <sheet string="Locations">
+                    <group>
+                        <field name="name"/>
+                        <field name="code"/>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="action_infrastructure_location" model="ir.actions.act_window">
+        <field name="name">Locations</field>
+        <field name="res_model">infrastructure.location</field>
+        <field name="view_mode">tree,form</field>
+        <field name="view_ids" eval="[(5, 0, 0),
+            (0, 0, {'view_mode': 'tree', 'view_id': ref('view_infrastructure_location_tree')}),
+            (0, 0, {'view_mode': 'form', 'view_id': ref('view_infrastructure_location_form')})]"/>
+    </record>
+
+    <menuitem
+        id="infrastructure_location_submenu"
+        action="action_infrastructure_location"
+        name="Locations"
+        parent="settings_menu"
+        sequence="100"/>
+
+    <record id="view_healthcare_episode_tree" model="ir.ui.view">
+        <field name="name">healthcare.episode.tree</field>
+        <field name="model">healthcare.episode</field>
+        <field eval="8" name="priority"/>
+        <field name="arch" type="xml">
+            <tree string="Episodes">
+                <field name="patient_id"/>
+                <field name="date_start"/>
+                <field name="date_end"/>
+                <field name="state"/>
+            </tree>
+        </field>
+    </record>
+
+    <record id="view_healthcare_episode_form" model="ir.ui.view">
+        <field name="name">healthcare.episode.form</field>
+        <field name="model">healthcare.episode</field>
+        <field name="priority" eval="2"/>
+        <field name="arch" type="xml">
+            <form string="Episodes">
+                <header>
+                    <field name="state" widget="statusbar" statusbar_visible="waitlist,active,onhold,finished" />
+                </header>
+                <sheet string="Episodes">
+                    <group>
+                        <field name="patient_id"  options="{'no_open': True, 'no_create': True}" readonly="1"/>
+                        <field name="date_start"/>
+                        <field name="date_end"/>
+                    </group>
+                    <notebook colspan="4">
+                        <page string="Encounters">
+                            <field name="encounter_ids" nolabel="True">
+                                <tree editable="bottom" string="Encounters" create="1" delete="0">
+                                    <field name="bed_id" options="{'no_open': True, 'no_create': True}"/>
+                                    <field name="location_id" options="{'no_open': True, 'no_create': True}"/>
+                                    <field name="date_start"/>
+                                    <field name="date_end"/>
+                                </tree>
+                            </field>
+                        </page>
+                    </notebook>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="action_healthcare_episode" model="ir.actions.act_window">
+        <field name="name">Episodes</field>
+        <field name="res_model">healthcare.episode</field>
+        <field name="view_mode">tree,form</field>
+        <field name="view_ids" eval="[(5, 0, 0),
+            (0, 0, {'view_mode': 'tree', 'view_id': ref('view_healthcare_episode_tree')}),
+            (0, 0, {'view_mode': 'form', 'view_id': ref('view_healthcare_episode_form')})]"/>
+    </record>
+
+    <menuitem
+        name="Episodes"
+        id="episode_menu"
+        parent="patient_administration"
+        sequence="50"/>
+    <menuitem
+        id="healthcare_episode_submenu"
+        action="action_healthcare_episode"
+        name="Episodes"
+        parent="episode_menu"
+        sequence="2"/>
 </odoo>
