@@ -41,6 +41,13 @@ class ResPartner(models.Model):
         for partner in self:
             partner.total_episodes = len(episode_obj.search([('patient_id', '=', partner.id)]))
 
+    @api.multi
+    def toggle_unknown(self):
+        """ Inverse the value of the field ``unknown`` on the records in ``self``. """
+        for record in self:
+            record.unknown = not record.unknown
+
+    unknown = fields.Boolean('Unidentified Patient')
     patient = fields.Boolean()
     gender_id = fields.Many2one(
         'administrative.gender', copy=False,
