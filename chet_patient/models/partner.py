@@ -49,6 +49,9 @@ class ResPartner(models.Model):
 
     unknown = fields.Boolean('Unidentified Patient')
     patient = fields.Boolean()
+    dt_1 = fields.Integer()
+    dt_2 = fields.Integer()
+    dt_3 = fields.Integer()
     gender_id = fields.Many2one(
         'administrative.gender', copy=False,
         help='The gender of a person used for administrative purposes')
@@ -70,6 +73,11 @@ class ResPartner(models.Model):
         compute='_compute_age',
         search='_search_age')
     total_episodes = fields.Integer(compute='_episode_total')
+
+    _sql_constraints = [
+        ('history_uniqueness', 'unique(dt_1,dt_2,dt_3)', "History Number must be unique per patient!"),
+        ('id_uniqueness', 'unique(vat)', "Identification Document Number must be unique per patient!"),
+                        ]
 
     @api.multi
     def _compute_age(self):

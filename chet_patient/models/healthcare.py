@@ -3,6 +3,12 @@
 from odoo import fields, models
 
 
+class DiseaseClassification(models.Model):
+    _name = 'disease.classification'
+
+    name = fields.Text('Disease Name')
+    code = fields.Char()
+
 class InfrastructureBed(models.Model):
     _name = 'infrastructure.bed'
 
@@ -39,6 +45,12 @@ class HealthcareEpisode(models.Model):
     #         'date_start': fields.Datetime.now(),
     #     })]
 
+    diagnosed_disease_id = fields.Many2one(
+        'disease.classification', required=False,
+        help="Presumptive Disease.")
+    alledged_disease_id = fields.Many2one(
+        'disease.classification', required=False,
+        help="Presumptive Disease.")
     patient_id = fields.Many2one(
         'res.partner', required=True,
         help="The patient who is in the focus of this episode of care.")
